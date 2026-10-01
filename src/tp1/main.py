@@ -1,4 +1,4 @@
-from tp1.utils.capture import capture
+from tp1.utils.capture import capture, sort_network_protocols
 from tp1.utils.config import logger
 import argparse
 
@@ -14,16 +14,19 @@ def main():
     packet = capture(interface=args.interface, pcap=args.pcap)
     print(packet)
 
-    ### Analyse de la capture
-    # capture.analyse("tcp")
-    # summary = capture.get_summary()
+    sort_network_protocols(packet=packet)
 
-    ### Reporting json / pdf
-    # filename = "report.pdf"
-    # report = Report(capture, filename, summary)
-    # report.generate("graph")
-    # report.generate("array")
-    # report.save(filename)
+
+### Analyse de la capture
+# capture.analyse("tcp")
+# summary = capture.get_summary()
+
+### Reporting json / pdf
+# filename = "report.pdf"
+# report = Report(capture, filename, summary)
+# report.generate("graph")
+# report.generate("array")
+# report.save(filename)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,8 @@
 from scapy.all import rdpcap, sniff
+from scapy.layers.dns import DNS
+from scapy.layers.inet import ICMP, UDP, TCP
+from scapy.layers.l2 import ARP
+from scapy.plist import PacketList
 
 from src.tp1.utils.lib import choose_interface
 from tp1.utils.config import logger
@@ -16,7 +20,7 @@ class Capture:
         interface = self.interface
         logger.info(f"Capture traffic from interface {interface}")
 
-    def sort_network_protocols(self) -> str:
+    def sort_network_protocols_object(self) -> str:
         """
         Sort and return all captured network protocols
         """
@@ -72,3 +76,23 @@ def capture(interface=None, pcap=None):
     else:
         raise ValueError("Il faut une interface ou un fichier pcap")
     return packets
+
+
+def sort_network_protocols(packet: PacketList):
+    sorted_packets = {"DNS": 0, "TCP": 0, "UDP": 0, "ICMP": 0, "ARP": 0, "Other": 0}
+    for p in packet:
+        if p.haslayer(DNS):
+            sorted_packets["DNS"] += 1
+        elif p.haslayer(TCP):
+            sorted_packets["TCP"] += 1
+        elif p.haslayer(UDP):
+            sorted_packets["UDP"] += 1
+        elif p.haslayer(ICMP):
+            sorted_packets["ICMP"] += 1
+        elif p.haslayer(ARP):
+            sorted_packets["ARP"] += 1
+        else:
+            sorted_packets["Other"] += 1
+
+    print(sorted_packets)
+    return sorted_packets
