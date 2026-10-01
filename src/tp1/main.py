@@ -11,7 +11,6 @@ def main():
     parser.add_argument("-i", "--interface", help="interface to capture")
     parser.add_argument("-p", "--pcap", help="filename to capture")
     args = parser.parse_args()
-
     packet = capture(interface=args.interface, pcap=args.pcap)
     print(packet)
 
