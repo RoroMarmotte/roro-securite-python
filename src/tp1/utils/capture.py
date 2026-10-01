@@ -1,15 +1,12 @@
 from scapy.sendrecv import sniff
 from scapy.utils import rdpcap
-import scapy.layers.all
 
 from src.tp1.utils.lib import choose_interface
 from tp1.utils.config import logger
 
 
-
-
 class Capture:
-    def __init__(self,pcap) -> None:
+    def __init__(self, pcap) -> None:
         self.interface = choose_interface()
         self.summary = ""
 
@@ -65,12 +62,13 @@ class Capture:
         summary = ""
         return summary
 
-def capture(interface=None , pcap=None):
+
+def capture(interface=None, pcap=None):
     if pcap:
         packets = rdpcap(pcap)
     elif interface:
         logger.info(f"Capture traffic from interface {interface}")
-        packets = sniff(iface=interface,count =15)
+        packets = sniff(iface=interface, count=15)
     else:
         raise ValueError("Il faut une interface ou un fichier pcap")
     return packets

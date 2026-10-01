@@ -1,8 +1,6 @@
 from tp1.utils.capture import capture
 from tp1.utils.config import logger
-from tp1.utils.report import Report
 import argparse
-
 
 
 def main():
@@ -14,20 +12,19 @@ def main():
     parser.add_argument("-p", "--pcap", help="filename to capture")
     args = parser.parse_args()
 
-    packet = capture(interface=args.interface ,pcap=args.pcap)
+    packet = capture(interface=args.interface, pcap=args.pcap)
     print(packet)
 
-
     ### Analyse de la capture
-    #capture.analyse("tcp")
-    #summary = capture.get_summary()
+    # capture.analyse("tcp")
+    # summary = capture.get_summary()
 
     ### Reporting json / pdf
-    #filename = "report.pdf"
-    #report = Report(capture, filename, summary)
-    #report.generate("graph")
-    #report.generate("array")
-    #report.save(filename)
+    # filename = "report.pdf"
+    # report = Report(capture, filename, summary)
+    # report.generate("graph")
+    # report.generate("array")
+    # report.save(filename)
 
 
 if __name__ == "__main__":
