@@ -1,5 +1,4 @@
-from scapy.sendrecv import sniff
-from scapy.utils import rdpcap
+from scapy.all import rdpcap, sniff
 
 from src.tp1.utils.lib import choose_interface
 from tp1.utils.config import logger
@@ -63,6 +62,7 @@ class Capture:
         return summary
 
 
+# Fonction d'ouverture de pcap / lecture d'interface
 def capture(interface=None, pcap=None):
     if pcap:
         packets = rdpcap(pcap)
