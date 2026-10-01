@@ -1,11 +1,9 @@
-from scapy.all import rdpcap, sniff
-from scapy.layers.dns import DNS
-from scapy.layers.inet import ICMP, UDP, TCP
-from scapy.layers.l2 import ARP
+from scapy.all import ARP, DNS, ICMP, IP, TCP, UDP, Ether, rdpcap, sniff
+from scapy.layers.http import HTTP
 from scapy.plist import PacketList
 
-from src.tp1.utils.lib import choose_interface
 from tp1.utils.config import logger
+from tp1.utils.lib import choose_interface
 
 
 class Capture:
@@ -23,12 +21,6 @@ class Capture:
     def sort_network_protocols_object(self) -> str:
         """
         Sort and return all captured network protocols
-        """
-        return ""
-
-    def get_all_protocols(self) -> str:
-        """
-        Return all protocols captured with total packets number
         """
         return ""
 
@@ -78,10 +70,28 @@ def capture(interface=None, pcap=None):
     return packets
 
 
-def sort_network_protocols(packet: PacketList):
-    sorted_packets = {"DNS": 0, "TCP": 0, "UDP": 0, "ICMP": 0, "ARP": 0, "Other": 0}
-    for p in packet:
-        if p.haslayer(DNS):
+def sort_network_protocols(packets: PacketList) -> dict:
+    """
+    Récupère une PacketList obtenue par capture().
+    Parcours les paquets un à un et attribue à chacun son protocole le plus précis.
+    Retourne un dictionnaire {protocole: nombre de paquets}.
+    Commence par http avant de check tcp car http utilise du tcp
+    """
+    sorted_packets = {
+        "HTTP": 0,
+        "DNS": 0,
+        "TCP": 0,
+        "UDP": 0,
+        "ICMP": 0,
+        "ARP": 0,
+        "IP": 0,
+        "Ethernet": 0,
+        "Other": 0,
+    }
+    for p in packets:
+        if p.haslayer(HTTP):
+            sorted_packets["HTTP"] += 1
+        elif p.haslayer(DNS):
             sorted_packets["DNS"] += 1
         elif p.haslayer(TCP):
             sorted_packets["TCP"] += 1
@@ -91,8 +101,21 @@ def sort_network_protocols(packet: PacketList):
             sorted_packets["ICMP"] += 1
         elif p.haslayer(ARP):
             sorted_packets["ARP"] += 1
+        elif p.haslayer(IP):
+            sorted_packets["IP"] += 1
+        elif p.haslayer(Ether):
+            sorted_packets["Ethernet"] += 1
         else:
             sorted_packets["Other"] += 1
-
-    print(sorted_packets)
     return sorted_packets
+
+
+def analyse(packet: PacketList):
+    """
+    Boucle sur la capture et cherche les schéma d'attaques
+    Trouve le flag également
+    Retoure une liste "Attaque" qui contient des dicos "type : <détails sur l'attaque>"
+    """
+    # attack = []
+
+    return None

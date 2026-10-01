@@ -14,7 +14,7 @@ def main():
     packet = capture(interface=args.interface, pcap=args.pcap)
     print(packet)
 
-    sort_network_protocols(packet=packet)
+    sort_network_protocols(packets=packet)
 
 
 ### Analyse de la capture
