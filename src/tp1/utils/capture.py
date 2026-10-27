@@ -9,11 +9,13 @@ from tp1.utils.config import logger
 def capture(interface=None, pcap=None):
     if pcap:
         packets = rdpcap(pcap)
+        packets = sorted(packets, key=lambda p: p.time)
     elif interface:
         logger.info(f"Capture traffic from interface {interface}")
         packets = sniff(iface=interface, count=15)
     else:
         raise ValueError("Il faut une interface ou un fichier pcap")
+
     return packets
 
 
