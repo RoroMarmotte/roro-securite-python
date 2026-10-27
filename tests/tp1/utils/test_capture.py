@@ -10,3 +10,14 @@ def test_capture_lecture_pcap(tmp_path):
     wrpcap(chemin, paquets)
     resultat = capture(pcap=chemin)
     assert len(resultat) == 2
+
+
+def test_capture_sans_argument():
+    """
+    Une lecture sans capture doit renvoyer une erreur
+    """
+    try:
+        capture()
+    except ValueError:
+        return
+    assert False, "capture() aurait dut refuser le manque d'arugment"
