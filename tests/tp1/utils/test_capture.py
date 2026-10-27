@@ -32,3 +32,16 @@ def test_capture_ecoute_interface(monkeypatch):
     resultat = capture(interface="eth0", pcap=None)
 
     assert resultat == ["Ether() / IP() / TCP()"]
+
+
+def test_capture_trie_les_paquets_par_heure(tmp_path):
+    chemin = str(tmp_path / "desordre.pcap")
+    premier = Ether() / IP() / TCP()
+    second = Ether() / ARP()
+    premier.time = 20
+    second.time = 15
+    wrpcap(chemin, [premier, second])
+
+    resultat = capture(pcap=chemin)
+
+    assert resultat[0].time == 15 and resultat[1].time == 20
