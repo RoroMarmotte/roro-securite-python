@@ -17,17 +17,5 @@ def main():
     sort_network_protocols(packets=packet)
 
 
-### Analyse de la capture
-# capture.analyse("tcp")
-# summary = capture.get_summary()
-
-### Reporting json / pdf
-# filename = "report.pdf"
-# report = Report(capture, filename, summary)
-# report.generate("graph")
-# report.generate("array")
-# report.save(filename)
-
-
 if __name__ == "__main__":
     main()
