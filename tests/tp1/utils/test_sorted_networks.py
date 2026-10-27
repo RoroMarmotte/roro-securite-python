@@ -28,3 +28,19 @@ def test_sort_network_protocols_unicite_paquet_protocole():
         "Ethernet": 1,
         "Other": 1,
     }
+
+
+def test_sort_network_protocols_liste_vide():
+    paquets = []
+    resultat = sort_network_protocols(paquets)
+    assert resultat == {
+        "HTTP": 0,
+        "DNS": 0,
+        "TCP": 0,
+        "UDP": 0,
+        "ICMP": 0,
+        "ARP": 0,
+        "IP": 0,
+        "Ethernet": 0,
+        "Other": 0,
+    }
