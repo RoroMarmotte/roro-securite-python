@@ -21,3 +21,14 @@ def test_capture_sans_argument():
     except ValueError:
         return
     assert False, "capture() aurait dut refuser le manque d'arugment"
+
+
+def test_capture_ecoute_interface(monkeypatch):
+    def faux_sniff(iface, count):
+        return ["Ether() / IP() / TCP()"]
+
+    monkeypatch.setattr("tp1.utils.capture.sniff", faux_sniff)
+
+    resultat = capture(interface="eth0", pcap=None)
+
+    assert resultat == ["Ether() / IP() / TCP()"]
