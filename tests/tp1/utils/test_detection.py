@@ -168,3 +168,32 @@ def test_compter_arp_sans_demande_reponse_seule():
     paquets = [Ether() / ARP(op=2, psrc="10.0.0.1", hwsrc="ee:ee:ee:ee:ee:ee")]
     resultat = detection.compter_arp_sans_demande(paquets)
     assert resultat == {"ee:ee:ee:ee:ee:ee": 1}
+
+
+def test_detecter_arp_spoofing_trouve_attaquant():
+    """
+    test que seule la mac de l'attaquant est signalée, pas celle de la vraie machine
+    """
+    paquets = [
+        Ether() / ARP(op=1, psrc="10.0.0.2", pdst="10.0.0.1"),
+        Ether() / ARP(op=2, psrc="10.0.0.1", hwsrc="aa:aa:aa:aa:aa:aa"),
+    ]
+    for i in range(3):
+        paquets.append(Ether() / ARP(op=2, psrc="10.0.0.1", hwsrc="ee:ee:ee:ee:ee:ee"))
+
+    resultat = detection.detecter_arp_spoofing(paquets)
+    assert resultat == [{"type": "arp_spoofing", "attacker": "ee:ee:ee:ee:ee:ee"}]
+
+
+def test_detecter_arp_spoofing_trafic_normal():
+    """
+    test que des échanges arp normaux ne sont pas pris pour une attaque
+    """
+    paquets = [
+        Ether() / ARP(op=1, psrc="10.0.0.2", pdst="10.0.0.1"),
+        Ether() / ARP(op=2, psrc="10.0.0.1", hwsrc="aa:aa:aa:aa:aa:aa"),
+        Ether() / ARP(op=1, psrc="10.0.0.1", pdst="10.0.0.2"),
+        Ether() / ARP(op=2, psrc="10.0.0.2", hwsrc="bb:bb:bb:bb:bb:bb"),
+    ]
+    resultat = detection.detecter_arp_spoofing(paquets)
+    assert resultat == []

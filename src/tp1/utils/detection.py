@@ -130,3 +130,28 @@ def compter_arp_sans_demande(packets):
                     sans_demande[mac] = 0
                 sans_demande[mac] += 1
     return sans_demande
+
+
+def detecter_arp_spoofing(packets):
+    """
+    détecte un arp spoofing : une ip revendiquée par plusieurs mac,
+    l'attaquant est la mac qui envoie le plus de réponses sans demande
+    """
+    carnet = trouver_revendications_arp(packets)
+    sans_demande = compter_arp_sans_demande(packets)
+    attaques = []
+    deja_signalees = set()
+
+    for ip, macs in carnet.items():
+        if len(macs) < 2:
+            continue
+        suspect = None
+        maximum = 0
+        for mac in macs:
+            if mac in sans_demande and sans_demande[mac] > maximum:
+                suspect = mac
+                maximum = sans_demande[mac]
+        if suspect is not None and suspect not in deja_signalees:
+            attaques.append({"type": "arp_spoofing", "attacker": suspect})
+            deja_signalees.add(suspect)
+    return attaques
