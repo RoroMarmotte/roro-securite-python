@@ -178,7 +178,7 @@ def extraire_flag(text):
     fin = text.find("}", debut)
     if fin == -1:
         return ""
-    return text[debut: fin + 1]
+    return text[debut : fin + 1]
 
 
 def trouver_attaquants(attacks):
