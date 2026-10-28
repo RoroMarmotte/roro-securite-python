@@ -1,6 +1,6 @@
 from scapy.all import IP, TCP, UDP, ARP, Ether, Raw
 from tp1.utils.detection import get_payload_text
-from tp1.utils.detection import is_syn, detect_port_scan, is_http_request
+from tp1.utils.detection import is_syn, detect_port_scan, is_http_request, contains_sql_injection
 
 
 def test_get_payload_text_decode_url():
@@ -80,3 +80,12 @@ def test_is_http_request():
     assert is_http_request("GET /index.html HTTP/1.1") is True
     assert is_http_request("POST /login HTTP/1.1") is True
     assert is_http_request("HTTP/1.1 200 OK") is False
+
+
+def test_contains_sql_injection():
+    """
+    test si la fonction contains sql injection détecte bien les motifs
+    """
+    assert contains_sql_injection("id=1' OR 1=1") is True
+    assert contains_sql_injection("id=1 UNION SELECT password")
+    assert not contains_sql_injection("id=42")

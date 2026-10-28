@@ -2,6 +2,7 @@ from urllib.parse import unquote_plus
 from scapy.all import IP, TCP
 
 SEUIL_SCAN = 15
+MOTIFS_SQL = ["' or 1=1", "' or '1'='1", "union select", "'--"]
 
 
 def get_payload_text(packet):
@@ -61,3 +62,14 @@ def is_http_request(text):
         return True
     else:
         return False
+
+
+def contains_sql_injection(text):
+    """
+    tente de détecter par motifs s'il y'a une injection sql dans un texte
+    """
+    texte = text.lower()
+    for motif in MOTIFS_SQL:
+        if motif in texte:
+            return True
+    return False
