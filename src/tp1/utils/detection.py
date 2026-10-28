@@ -1,5 +1,7 @@
 from urllib.parse import unquote_plus
-from scapy.all import TCP
+from scapy.all import IP, TCP
+
+SEUIL_SCAN = 15
 
 
 def get_payload_text(packet):
@@ -26,3 +28,24 @@ def is_syn(packet):
         return True
     else:
         return False
+
+
+def detect_port_scan(packets):
+    """
+    Si une ip essaie de cartographier les ports alors l'ajouter au carnet
+    """
+    ports_par_ip = {}
+
+    for p in packets:
+        if is_syn(p) and p.haslayer(IP):
+            ip = p[IP].src
+            port = p[TCP].dport
+            if ip not in ports_par_ip:
+                ports_par_ip[ip] = set()
+            ports_par_ip[ip].add(port)
+
+    attaques = []
+    for ip, ports in ports_par_ip.items():
+        if len(ports) >= SEUIL_SCAN:
+            attaques.append({"type": "port_scan", "attacker": ip})
+    return attaques
