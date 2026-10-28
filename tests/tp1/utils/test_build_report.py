@@ -1,4 +1,7 @@
+import json
+
 from tp1.utils.report import build_report
+from tp1.utils.report import write_json
 
 
 def test_build_report_nettoyer_zero():
@@ -15,3 +18,14 @@ def test_build_report_attaques_et_flag():
 
     assert resultat["attacks"] == attaques
     assert resultat["flag"] == flag
+
+
+def test_write_json_ecrit_le_fichier(tmp_path):
+    chemin = str(tmp_path / "report.json")
+    rapport = {"protocols": {"ARP": 1, "TCP": 1}, "attacks": [], "flag": ""}
+    write_json(report=rapport, path=chemin)
+
+    with open(chemin, encoding="utf-8") as fichier:
+        relu = json.load(fichier)
+
+    assert rapport == relu
