@@ -45,7 +45,7 @@ Par défaut, les fichiers de sortie sont `report.json` et `report.pdf`.
 - `attacks` : attaques trouvées, avec l'IP (ou la MAC pour l'ARP) de l'attaquant.
 - `flag` : le flag `ESGI{...}` envoyé par un attaquant détecté, ou `""`.
 
-Le PDF reprend le tableau des protocoles, un graphique en barres, les attaques et le flag.
+Le PDF contient le tableau des volumes par protocole et un graphique en barres.
 
 ## Protocoles comptés
 

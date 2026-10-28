@@ -69,19 +69,3 @@ def test_draw_bar_chart(tmp_path):
     with open(chemin, "rb") as fichier:
         debut = fichier.read(4)
     assert debut == b"%PDF"
-
-
-def test_save_pdf_avec_attaques(tmp_path):
-    """
-    test que save_pdf cree le pdf quand le rapport contient une attaque et un flag
-    """
-    chemin = str(tmp_path / "report.pdf")
-    rapport = {
-        "protocols": {"TCP": 20},
-        "attacks": [{"type": "port_scan", "attacker": "10.0.0.5"}],
-        "flag": "ESGI{test}",
-    }
-    save_pdf(rapport, chemin)
-    with open(chemin, "rb") as fichier:
-        debut = fichier.read(4)
-    assert debut == b"%PDF"

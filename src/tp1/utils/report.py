@@ -41,7 +41,7 @@ def draw_bar_chart(pdf, protocols):
 
 def save_pdf(report, path):
     """
-    crée un rapport pdf : titre, tableau et graphique des protocoles, attaques détectées et flag
+    crée un rapport pdf : titre, tableau et graphique des volumes par protocole
     """
     pdf = FPDF()
     pdf.add_page()
@@ -63,24 +63,4 @@ def save_pdf(report, path):
     pdf.cell(0, 8, "Graphique", new_x="LMARGIN", new_y="NEXT")
     pdf.set_font("Helvetica", "", 12)
     draw_bar_chart(pdf, report["protocols"])
-
-    pdf.ln(8)
-    pdf.set_font("Helvetica", "B", 12)
-    pdf.cell(0, 8, "Attaques détectées", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font("Helvetica", "", 12)
-    if not report["attacks"]:
-        pdf.cell(0, 8, "Aucune attaque détectée", new_x="LMARGIN", new_y="NEXT")
-    for attaque in report["attacks"]:
-        pdf.cell(0, 8, f"- {attaque['type']} : {attaque['attacker']}", new_x="LMARGIN", new_y="NEXT")
-
-    pdf.ln(8)
-    pdf.set_font("Helvetica", "B", 12)
-    pdf.cell(0, 8, "Flag", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font("Helvetica", "", 12)
-    if report["flag"]:
-        texte_flag = report["flag"]
-    else:
-        texte_flag = "Aucun flag trouvé"
-    pdf.cell(0, 8, texte_flag, new_x="LMARGIN", new_y="NEXT")
-
     pdf.output(path)
