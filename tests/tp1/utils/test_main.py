@@ -12,12 +12,13 @@ def test_main_ecrit_report_json(tmp_path, monkeypatch):
     """
     pcap = str(tmp_path / "mini.pcap")
     sortie = str(tmp_path / "report.json")
+    sortie_pdf = tmp_path / "report.pdf"
     paquets = [
         Ether(src="aa:bb:cc:dd:ee:01", dst="aa:bb:cc:dd:ee:02") / IP() / TCP(),
         Ether(src="aa:bb:cc:dd:ee:01", dst="ff:ff:ff:ff:ff:ff") / ARP(),
     ]
     wrpcap(pcap, paquets)
-    monkeypatch.setattr("sys.argv", ["tp1", "--pcap", pcap, "--out", sortie])
+    monkeypatch.setattr("sys.argv", ["tp1", "--pcap", pcap, "--out", sortie, "--pdf", str(sortie_pdf)])
     main()
     with open(sortie, encoding="utf-8") as fichier:
         rapport = json.load(fichier)
@@ -25,3 +26,4 @@ def test_main_ecrit_report_json(tmp_path, monkeypatch):
     assert rapport["protocols"] == {"TCP": 1, "IP": 1, "ARP": 1, "Ethernet": 2}
     assert rapport["attacks"] == []
     assert rapport["flag"] == ""
+    assert sortie_pdf.exists()
