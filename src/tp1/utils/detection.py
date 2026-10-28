@@ -107,3 +107,26 @@ def trouver_revendications_arp(packets):
                 carnet[ip] = set()
             carnet[ip].add(mac)
     return carnet
+
+
+def compter_arp_sans_demande(packets):
+    """
+    compte pour chaque mac le nombre de réponses arp envoyées sans demande avant
+    """
+    demandes = set()
+    sans_demande = {}
+    for p in packets:
+        if not p.haslayer(ARP):
+            continue
+        if p[ARP].op == 1:
+            demandes.add(p[ARP].pdst)
+        elif p[ARP].op == 2:
+            ip = p[ARP].psrc
+            mac = p[ARP].hwsrc
+            if ip in demandes:
+                demandes.remove(ip)
+            else:
+                if mac not in sans_demande:
+                    sans_demande[mac] = 0
+                sans_demande[mac] += 1
+    return sans_demande

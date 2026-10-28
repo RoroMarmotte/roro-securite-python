@@ -147,3 +147,24 @@ def test_trouver_revendications_arp_ignore_les_requetes():
     resultat = detection.trouver_revendications_arp(paquets)
 
     assert resultat == {}
+
+
+def test_compter_arp_sans_demande_echange_normal():
+    """
+    test qu'une réponse arp qui suit une demande n'est pas comptée
+    """
+    paquets = [
+        Ether() / ARP(op=1, psrc="10.0.0.2", pdst="10.0.0.1"),
+        Ether() / ARP(op=2, psrc="10.0.0.1", hwsrc="aa:aa:aa:aa:aa:aa"),
+    ]
+    resultat = detection.compter_arp_sans_demande(paquets)
+    assert resultat == {}
+
+
+def test_compter_arp_sans_demande_reponse_seule():
+    """
+    test qu'une réponse arp sans demande avant est comptée pour sa mac
+    """
+    paquets = [Ether() / ARP(op=2, psrc="10.0.0.1", hwsrc="ee:ee:ee:ee:ee:ee")]
+    resultat = detection.compter_arp_sans_demande(paquets)
+    assert resultat == {"ee:ee:ee:ee:ee:ee": 1}
