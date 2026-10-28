@@ -1,6 +1,7 @@
+import argparse
 from tp1.utils.capture import capture, sort_network_protocols
 from tp1.utils.config import logger
-import argparse
+from tp1.utils.report import build_report, write_json
 
 
 def main():
@@ -10,11 +11,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--interface", help="interface to capture")
     parser.add_argument("-p", "--pcap", help="filename to capture")
+    parser.add_argument("-o", "--out", default="report.json", help="report json")
+
     args = parser.parse_args()
     packet = capture(interface=args.interface, pcap=args.pcap)
-    print(packet)
-
-    sort_network_protocols(packets=packet)
+    protocols = sort_network_protocols(packets=packet)
+    report = build_report(protocols, [], "")
+    write_json(report, args.out)
 
 
 if __name__ == "__main__":
