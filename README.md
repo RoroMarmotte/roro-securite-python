@@ -1,29 +1,56 @@
-# Template code Sécurité Python
+# TP1 - IDS/IPS maison
 
-## Description
-
-Projet contenant les modèles de TP pour le cours de sécurité Python de 4e année de l'ESGI.
+Outil en Python (Scapy) qui lit une capture réseau, compte les paquets par protocole
+et cherche des attaques dedans. Le résultat est écrit dans un fichier `report.json`.
 
 ## Installation
 
-Faire un fork puis un clone du projet :
-
 ```bash
-git clone git@github.com:<VotreNom>/template-securite-python.git
-```
-
-Installer les dépendances :
-
-```bash
-cd template-securite-python
-poetry lock
 poetry install
 ```
 
 ## Utilisation
 
-Lancer le projet :
+Lire un fichier pcap :
 
 ```bash
-poetry run tp1
+poetry run tp1 --pcap capture.pcap --out report.json
+```
+
+Écouter une interface (pour le développement) :
+
+```bash
+poetry run tp1 --interface eth0 --out report.json
+```
+
+## Contenu du rapport
+
+```json
+{
+  "protocols": { "Ethernet": 143, "IP": 123, "TCP": 95, "ARP": 20 },
+  "attacks": [],
+  "flag": ""
+}
+```
+
+- `protocols` : nombre de paquets par protocole, couche par couche
+  (un paquet DNS compte aussi en UDP, IP et Ethernet). Les protocoles absents ne sont pas affichés.
+- `attacks` : liste des attaques trouvées, avec leur type et l'adresse de l'attaquant.
+- `flag` : le flag `ESGI{...}` envoyé par un attaquant.
+
+## Protocoles comptés
+
+Ethernet, ARP, IP, TCP, UDP, ICMP, DNS, HTTP.
+
+## Détections
+
+- [ ] Scan de ports
+- [ ] Injection SQL
+- [ ] ARP spoofing
+- [ ] Recherche du flag
+
+## Tests
+
+```bash
+poetry run pytest tests/tp1
 ```
