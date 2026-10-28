@@ -189,3 +189,20 @@ def trouver_attaquants(attacks):
     for attaque in attacks:
         attaquants.add(attaque["attacker"])
     return attaquants
+
+
+def trouver_flag(packets, attacks):
+    """
+    renvoie le premier flag envoyé par un attaquant détecté (ip ou mac source), sinon ""
+    """
+    attaquants = trouver_attaquants(attacks)
+    for p in packets:
+        if p.haslayer(IP):
+            ip_source = p[IP].src
+        else:
+            ip_source = ""
+        if ip_source in attaquants or p.src in attaquants:
+            flag = extraire_flag(get_payload_text(p))
+            if flag != "":
+                return flag
+    return ""

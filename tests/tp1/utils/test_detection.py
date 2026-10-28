@@ -235,3 +235,37 @@ def test_trouver_attaquants():
     ]
     resultat = detection.trouver_attaquants(attaques)
     assert resultat == {"10.0.0.5", "aa:bb:cc:dd:ee:ff"}
+
+
+def test_trouver_flag_ignore_les_faux():
+    """
+    test qu'on garde le flag de l'attaquant et pas un faux flag envoye par une ip normale
+    """
+    attaques = [{"type": "sql_injection", "attacker": "10.0.0.9"}]
+    paquets = [
+        Ether(src="aa:bb:cc:dd:ee:01", dst="aa:bb:cc:dd:ee:02")
+        / IP(src="10.0.0.1")
+        / TCP()
+        / Raw(b"GET /?q=ESGI{faux} HTTP/1.1"),
+        Ether(src="aa:bb:cc:dd:ee:03", dst="aa:bb:cc:dd:ee:02")
+        / IP(src="10.0.0.9")
+        / TCP()
+        / Raw(b"GET /?q=ESGI{vrai} HTTP/1.1"),
+    ]
+    resultat = detection.trouver_flag(paquets, attaques)
+    assert resultat == "ESGI{vrai}"
+
+
+def test_trouver_flag_sans_flag():
+    """
+    test que la fonction renvoie "" quand aucun paquet de l'attaquant ne contient de flag
+    """
+    attaques = [{"type": "port_scan", "attacker": "10.0.0.5"}]
+    paquets = [
+        Ether(src="aa:bb:cc:dd:ee:01", dst="aa:bb:cc:dd:ee:02")
+        / IP(src="10.0.0.5")
+        / TCP()
+        / Raw(b"GET /index.html HTTP/1.1"),
+    ]
+    resultat = detection.trouver_flag(paquets, attaques)
+    assert resultat == ""
