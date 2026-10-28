@@ -1,5 +1,5 @@
 from urllib.parse import unquote_plus
-from scapy.all import IP, TCP
+from scapy.all import IP, TCP, ARP
 
 SEUIL_SCAN = 15
 MOTIFS_SQL = ["' or 1=1", "' or '1'='1", "union select", "'--"]
@@ -92,3 +92,18 @@ def detect_sql_injection(packets):
                 attaques.append({"type": "sql_injection", "attacker": ip})
                 deja_signalees.add(ip)
     return attaques
+
+
+def trouver_revendications_arp(packets):
+    """
+    construit le carnet des réponses arp : pour chaque ip, les mac qui disent la posséder
+    """
+    carnet = {}
+    for p in packets:
+        if p.haslayer(ARP) and p[ARP].op == 2:
+            ip = p[ARP].psrc
+            mac = p[ARP].hwsrc
+            if ip not in carnet:
+                carnet[ip] = set()
+            carnet[ip].add(mac)
+    return carnet

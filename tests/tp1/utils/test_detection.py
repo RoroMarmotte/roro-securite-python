@@ -124,3 +124,26 @@ def test_detect_sql_injection_ignore_les_reponses():
     paquet = Ether() / IP(src="10.0.0.1") / TCP() / Raw(b"HTTP/1.1 200 OK ... UNION SELECT")
     resultat = detection.detect_sql_injection([paquet])
     assert resultat == []
+
+
+def test_trouver_revendications_arp():
+    """
+    test que le carnet garde toutes les mac qui revendiquent la même ip
+    """
+    paquets = [
+        Ether() / ARP(op=2, psrc="10.0.0.1", hwsrc="aa:aa:aa:aa:aa:aa"),
+        Ether() / ARP(op=2, psrc="10.0.0.1", hwsrc="ee:ee:ee:ee:ee:ee"),
+    ]
+    resultat = detection.trouver_revendications_arp(paquets)
+
+    assert resultat == {"10.0.0.1": {"aa:aa:aa:aa:aa:aa", "ee:ee:ee:ee:ee:ee"}}
+
+
+def test_trouver_revendications_arp_ignore_les_requetes():
+    """
+    test qu'une requête arp ne revendique aucune ip
+    """
+    paquets = [Ether() / ARP(op=1, psrc="10.0.0.2", pdst="10.0.0.1")]
+    resultat = detection.trouver_revendications_arp(paquets)
+
+    assert resultat == {}
