@@ -73,3 +73,22 @@ def contains_sql_injection(text):
         if motif in texte:
             return True
     return False
+
+
+def detect_sql_injection(packets):
+    """
+    permet de détecter s'il y'a une injection sql dans une liste de paquets
+    """
+    attaques = []
+    deja_signalees = set()
+
+    for p in packets:
+        if not p.haslayer(IP):
+            continue
+        texte = get_payload_text(p)
+        if is_http_request(texte) and contains_sql_injection(texte):
+            ip = p[IP].src
+            if ip not in deja_signalees:
+                attaques.append({"type": "sql_injection", "attacker": ip})
+                deja_signalees.add(ip)
+    return attaques
