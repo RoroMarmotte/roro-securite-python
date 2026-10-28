@@ -14,3 +14,4 @@ fichier/
 *.pcapng
 report.json
 *.pdf
+triage/
