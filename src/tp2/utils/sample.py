@@ -1,6 +1,9 @@
+import hashlib
 import math
 from collections import Counter
 from pathlib import Path
+
+import magic
 
 
 def lister_echantillons(dossier: str) -> list[Path]:
@@ -24,3 +27,16 @@ def shannon_entropy(data: bytes) -> float:
     n = len(data)
     entropie = -sum((c / n) * math.log2(c / n) for c in freq.values())
     return abs(entropie)
+
+
+def get_file_metadata(data: bytes) -> dict:
+    """
+    calcule les empreintes, la taille, le type et l'entropie du fichier, sans jamais l'exécuter
+    """
+    return {
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "md5": hashlib.md5(data, usedforsecurity=False).hexdigest(),
+        "size": len(data),
+        "file_type": magic.from_buffer(data),
+        "entropy": round(shannon_entropy(data), 2),
+    }
