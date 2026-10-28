@@ -222,3 +222,16 @@ def test_extraire_flag():
     assert detection.extraire_flag("abc ESGI{toto} def") == "ESGI{toto}"
     assert detection.extraire_flag("rien") == ""
     assert detection.extraire_flag("ESGI{pas fermé") == ""
+
+
+def test_trouver_attaquants():
+    """
+    test qu'on recupere les ip et les mac des attaquants, sans doublon
+    """
+    attaques = [
+        {"type": "port_scan", "attacker": "10.0.0.5"},
+        {"type": "sql_injection", "attacker": "10.0.0.5"},
+        {"type": "arp_spoofing", "attacker": "aa:bb:cc:dd:ee:ff"},
+    ]
+    resultat = detection.trouver_attaquants(attaques)
+    assert resultat == {"10.0.0.5", "aa:bb:cc:dd:ee:ff"}

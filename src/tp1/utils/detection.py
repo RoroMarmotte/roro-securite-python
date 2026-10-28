@@ -5,6 +5,7 @@ SEUIL_SCAN = 15
 MOTIFS_SQL = ["' or 1=1", "' or '1'='1", "union select", "'--"]
 PREFIXE_FLAG = "ESGI{"
 
+
 def get_payload_text(packet):
     """
     Récupère le payload dans un paquet
@@ -177,4 +178,14 @@ def extraire_flag(text):
     fin = text.find("}", debut)
     if fin == -1:
         return ""
-    return text[debut : fin + 1]
+    return text[debut: fin + 1]
+
+
+def trouver_attaquants(attacks):
+    """
+    renvoie l'ensemble des attaquants (ip ou mac) présents dans la liste des attaques
+    """
+    attaquants = set()
+    for attaque in attacks:
+        attaquants.add(attaque["attacker"])
+    return attaquants
