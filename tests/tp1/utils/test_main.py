@@ -12,7 +12,10 @@ def test_main_ecrit_report_json(tmp_path, monkeypatch):
     """
     pcap = str(tmp_path / "mini.pcap")
     sortie = str(tmp_path / "report.json")
-    paquets = [Ether() / IP() / TCP(), Ether() / ARP()]
+    paquets = [
+        Ether(src="aa:bb:cc:dd:ee:01", dst="aa:bb:cc:dd:ee:02") / IP() / TCP(),
+        Ether(src="aa:bb:cc:dd:ee:01", dst="ff:ff:ff:ff:ff:ff") / ARP(),
+    ]
     wrpcap(pcap, paquets)
     monkeypatch.setattr("sys.argv", ["tp1", "--pcap", pcap, "--out", sortie])
     main()

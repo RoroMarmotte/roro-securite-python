@@ -11,7 +11,10 @@ def test_capture_lecture_pcap(tmp_path):
     # 2 paquets écrits dans un fichier pcap temporaire
     chemin = tmp_path / "mini.pcap"
     chemin = str(chemin)
-    paquets = [Ether() / IP() / TCP(), Ether() / ARP()]
+    paquets = [
+        Ether(src="aa:bb:cc:dd:ee:01", dst="aa:bb:cc:dd:ee:02") / IP() / TCP(),
+        Ether(src="aa:bb:cc:dd:ee:01", dst="ff:ff:ff:ff:ff:ff") / ARP(),
+    ]
     wrpcap(chemin, paquets)
     resultat = capture(pcap=chemin)
     assert len(resultat) == 2
@@ -50,8 +53,8 @@ def test_capture_trie_les_paquets_par_heure(tmp_path):
     Vérifie que les paquets sont triés par heure (notamment pour les attaques spoofing)
     """
     chemin = str(tmp_path / "desordre.pcap")
-    premier = Ether() / IP() / TCP()
-    second = Ether() / ARP()
+    premier = Ether(src="aa:bb:cc:dd:ee:01", dst="aa:bb:cc:dd:ee:02") / IP() / TCP()
+    second = Ether(src="aa:bb:cc:dd:ee:01", dst="ff:ff:ff:ff:ff:ff") / ARP()
     premier.time = 20
     second.time = 15
     wrpcap(chemin, [premier, second])
