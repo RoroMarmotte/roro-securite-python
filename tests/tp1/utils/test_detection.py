@@ -213,3 +213,12 @@ def test_analyse_regroupe_les_attaques():
     assert len(resultat) == 2
     assert {"type": "port_scan", "attacker": "10.0.0.5"} in resultat
     assert {"type": "sql_injection", "attacker": "10.0.0.9"} in resultat
+
+
+def test_extraire_flag():
+    """
+    test qu'on recupere le flag avec ses accolades, et "" s'il est absent ou pas ferme
+    """
+    assert detection.extraire_flag("abc ESGI{toto} def") == "ESGI{toto}"
+    assert detection.extraire_flag("rien") == ""
+    assert detection.extraire_flag("ESGI{pas fermé") == ""

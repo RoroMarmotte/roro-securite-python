@@ -3,7 +3,7 @@ from scapy.all import IP, TCP, ARP
 
 SEUIL_SCAN = 15
 MOTIFS_SQL = ["' or 1=1", "' or '1'='1", "union select", "'--"]
-
+PREFIXE_FLAG = "ESGI{"
 
 def get_payload_text(packet):
     """
@@ -165,3 +165,16 @@ def analyse(packets):
     injections = detect_sql_injection(packets)
     usurpations = detecter_arp_spoofing(packets)
     return scans + injections + usurpations
+
+
+def extraire_flag(text):
+    """
+    renvoie le premier flag ESGI{...} trouvé dans le texte, accolades comprises, sinon ""
+    """
+    debut = text.find(PREFIXE_FLAG)
+    if debut == -1:
+        return ""
+    fin = text.find("}", debut)
+    if fin == -1:
+        return ""
+    return text[debut : fin + 1]
