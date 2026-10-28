@@ -2,6 +2,7 @@ import json
 
 from tp1.utils.report import build_report
 from tp1.utils.report import write_json
+from tp1.utils.report import save_pdf
 
 
 def test_build_report_nettoyer_zero():
@@ -38,3 +39,15 @@ def test_write_json_ecrit_le_fichier(tmp_path):
         relu = json.load(fichier)
 
     assert rapport == relu
+
+
+def test_save_pdf_cree_un_pdf(tmp_path):
+    """
+    test que save_pdf cree bien un vrai fichier pdf
+    """
+    chemin = str(tmp_path / "report.pdf")
+    rapport = {"protocols": {"TCP": 3, "ARP": 1}, "attacks": [], "flag": ""}
+    save_pdf(rapport, chemin)
+    with open(chemin, "rb") as fichier:
+        debut = fichier.read(4)
+    assert debut == b"%PDF"
