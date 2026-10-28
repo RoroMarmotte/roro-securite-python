@@ -155,3 +155,13 @@ def detecter_arp_spoofing(packets):
             attaques.append({"type": "arp_spoofing", "attacker": suspect})
             deja_signalees.add(suspect)
     return attaques
+
+
+def analyse(packets):
+    """
+    regroupe toutes les attaques trouvées : scan de ports, injection sql et arp spoofing
+    """
+    scans = detect_port_scan(packets)
+    injections = detect_sql_injection(packets)
+    usurpations = detecter_arp_spoofing(packets)
+    return scans + injections + usurpations

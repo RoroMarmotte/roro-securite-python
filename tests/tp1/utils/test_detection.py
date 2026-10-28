@@ -197,3 +197,19 @@ def test_detecter_arp_spoofing_trafic_normal():
     ]
     resultat = detection.detecter_arp_spoofing(paquets)
     assert resultat == []
+
+
+def test_analyse_regroupe_les_attaques():
+    """
+    test que analyse renvoie a la fois le scan de ports et l'injection sql
+    """
+    paquets = []
+    for port in range(1, 21):
+        paquets.append(Ether() / IP(src="10.0.0.5") / TCP(dport=port, flags="S"))
+    paquets.append(Ether() / IP(src="10.0.0.9") / TCP() / Raw(b"GET /?id=1%27+OR+1%3D1 HTTP/1.1"))
+
+    resultat = detection.analyse(paquets)
+
+    assert len(resultat) == 2
+    assert {"type": "port_scan", "attacker": "10.0.0.5"} in resultat
+    assert {"type": "sql_injection", "attacker": "10.0.0.9"} in resultat
