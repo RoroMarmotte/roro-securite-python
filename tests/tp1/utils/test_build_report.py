@@ -5,12 +5,18 @@ from tp1.utils.report import write_json
 
 
 def test_build_report_nettoyer_zero():
+    """
+    test la fonction build_report pour voir si elle nullifie les paquets avec 0 au compteur
+    """
     protocols = {"TCP": 3, "ARP": 0}
     resultat = build_report(protocols, [], flag=None)
     assert resultat["protocols"] == {"TCP": 3}
 
 
 def test_build_report_attaques_et_flag():
+    """
+    vérifie que la fonction build report renvoie bien le flag et l'attaque si présente
+    """
     attaques = [{"type": "arp_spoofing", "attacker": "aa:bb:cc:dd:ee:ff"}]
     flag = "ESGI{tentative}"
 
@@ -21,6 +27,9 @@ def test_build_report_attaques_et_flag():
 
 
 def test_write_json_ecrit_le_fichier(tmp_path):
+    """
+    vérifie que la fonction write_json renvoie un fichier json une fois qu'on l'écrit
+    """
     chemin = str(tmp_path / "report.json")
     rapport = {"protocols": {"ARP": 1, "TCP": 1}, "attacks": [], "flag": ""}
     write_json(report=rapport, path=chemin)

@@ -7,6 +7,14 @@ from tp1.utils.config import logger
 
 # Fonction d'ouverture de pcap / lecture d'interface
 def capture(interface=None, pcap=None):
+    """
+    Capture le trafique
+    Args:
+        interface: via la carte réseaux
+        pcap:  via un fichier existant
+
+    renvoie : les paquets trouvé durant la capture sous la forme d'un dictionnaire trié par heure
+    """
     if pcap:
         packets = rdpcap(pcap)
         packets = sorted(packets, key=lambda p: p.time)
@@ -25,6 +33,8 @@ def sort_network_protocols(packets: PacketList) -> dict:
     Parcours les paquets un à un et attribue à chacun son protocole le plus précis.
     Retourne un dictionnaire {protocole: nombre de paquets}.
     Commence par http avant de check tcp car http utilise du tcp
+
+    Comptage par couche
     """
     sorted_packets = {
         "HTTP": 0,
@@ -35,25 +45,22 @@ def sort_network_protocols(packets: PacketList) -> dict:
         "ARP": 0,
         "IP": 0,
         "Ethernet": 0,
-        "Other": 0,
     }
     for p in packets:
         if p.haslayer(HTTP):
             sorted_packets["HTTP"] += 1
-        elif p.haslayer(DNS):
+        if p.haslayer(DNS):
             sorted_packets["DNS"] += 1
-        elif p.haslayer(TCP):
+        if p.haslayer(TCP):
             sorted_packets["TCP"] += 1
-        elif p.haslayer(UDP):
+        if p.haslayer(UDP):
             sorted_packets["UDP"] += 1
-        elif p.haslayer(ICMP):
+        if p.haslayer(ICMP):
             sorted_packets["ICMP"] += 1
-        elif p.haslayer(ARP):
+        if p.haslayer(ARP):
             sorted_packets["ARP"] += 1
-        elif p.haslayer(IP):
+        if p.haslayer(IP):
             sorted_packets["IP"] += 1
-        elif p.haslayer(Ether):
+        if p.haslayer(Ether):
             sorted_packets["Ethernet"] += 1
-        else:
-            sorted_packets["Other"] += 1
     return sorted_packets

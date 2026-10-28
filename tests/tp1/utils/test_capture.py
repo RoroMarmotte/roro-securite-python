@@ -3,6 +3,11 @@ from tp1.utils.capture import capture
 
 
 def test_capture_lecture_pcap(tmp_path):
+    """
+    test de lecture d'un faux fichier pcap qui renvoie le bon nombre de protocole
+    Args:
+        tmp_path: argument par défaut de pytest
+    """
     # 2 paquets écrits dans un fichier pcap temporaire
     chemin = tmp_path / "mini.pcap"
     chemin = str(chemin)
@@ -24,6 +29,12 @@ def test_capture_sans_argument():
 
 
 def test_capture_ecoute_interface(monkeypatch):
+    """
+    Vérifie qu'on puisse écouter sur une interface
+    Args:
+        monkeypatch: arguments par défaut de pytest pour détourné une fonction
+    """
+
     def faux_sniff(iface, count):
         return ["Ether() / IP() / TCP()"]
 
@@ -35,6 +46,9 @@ def test_capture_ecoute_interface(monkeypatch):
 
 
 def test_capture_trie_les_paquets_par_heure(tmp_path):
+    """
+    Vérifie que les paquets sont triés par heure (notamment pour les attaques spoofing)
+    """
     chemin = str(tmp_path / "desordre.pcap")
     premier = Ether() / IP() / TCP()
     second = Ether() / ARP()
