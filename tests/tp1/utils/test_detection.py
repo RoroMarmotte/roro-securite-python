@@ -1,6 +1,6 @@
 from scapy.all import IP, TCP, UDP, ARP, Ether, Raw
 from tp1.utils.detection import get_payload_text
-from tp1.utils.detection import is_syn, detect_port_scan
+from tp1.utils.detection import is_syn, detect_port_scan, is_http_request
 
 
 def test_get_payload_text_decode_url():
@@ -71,3 +71,12 @@ def test_detect_port_scan_ignore_les_syn_ack():
     resultat = detect_port_scan(paquets)
 
     assert resultat == []
+
+
+def test_is_http_request():
+    """
+    Vérifie que la fonction is http renvoie bien True lors d'une requête http et False sinon
+    """
+    assert is_http_request("GET /index.html HTTP/1.1") is True
+    assert is_http_request("POST /login HTTP/1.1") is True
+    assert is_http_request("HTTP/1.1 200 OK") is False

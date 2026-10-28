@@ -49,3 +49,15 @@ def detect_port_scan(packets):
         if len(ports) >= SEUIL_SCAN:
             attaques.append({"type": "port_scan", "attacker": ip})
     return attaques
+
+
+def is_http_request(text):
+    """
+    vérifier si on a une requête http grâce à l'entête
+    """
+    if text.startswith("GET "):
+        return True
+    elif text.startswith("POST "):
+        return True
+    else:
+        return False
