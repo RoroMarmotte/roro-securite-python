@@ -85,5 +85,9 @@ def test_deviner_mitre_trie_et_liste_vide():
     """
     avec_url = {**IOCS_VIDES, "urls": ["http://c2.goggins.test/gate.php"]}
 
-    assert deviner_mitre(avec_url, ["URLDownloadToFileA"], ["Persistance_Cle_Run"]) == ["T1071", "T1105", "T1547"]
+    assert deviner_mitre(avec_url, ["URLDownloadToFileA"], ["Persistance_Cle_Run"]) == [
+        "T1071",
+        "T1105",
+        "T1547",
+    ]
     assert deviner_mitre(IOCS_VIDES, ["printf"], []) == []
