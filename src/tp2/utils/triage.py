@@ -9,6 +9,12 @@ INDICES_FAMILLES = {
     "ransomware": ["cryptencrypt", "cryptgenkey"],
     "stealer": ["cryptunprotectdata", "credenumerate"],
 }
+REGLE_PERSISTANCE = "Persistance_Cle_Run"
+INDICES_MITRE = {
+    "T1056": ["setwindowshookex", "getasynckeystate"],
+    "T1059": ["cmd.exe", "powershell"],
+    "T1105": ["urldownloadtofile"],
+}
 
 
 def calculer_score(yara_matches: list[str], iocs: dict, entropie: float, injection: bool) -> int:
@@ -50,3 +56,24 @@ def deviner_famille(iocs: dict, imports: list[str], yara_matches: list[str]) -> 
     if iocs["domains"] or iocs["ips"] or iocs["urls"]:
         return "trojan"
     return "unknown"
+
+
+def deviner_mitre(iocs: dict, imports: list[str], yara_matches: list[str]) -> list[str]:
+    """
+    on traduit ce qu'on a trouvé en techniques MITRE ATT&CK, genre une clé Run ça donne
+    T1547 (persistance), une URL T1071 (il parle à un serveur) et un fichier packé T1027
+    """
+    techniques = set()
+    cle_run = any("\\run" in cle.lower() for cle in iocs["registry"])
+    if cle_run or REGLE_PERSISTANCE in yara_matches:
+        techniques.add("T1547")
+    if iocs["urls"]:
+        techniques.add("T1071")
+    if REGLE_PACKE in yara_matches:
+        techniques.add("T1027")
+
+    texte = " ".join(imports).lower()
+    for technique, mots in INDICES_MITRE.items():
+        if any(mot in texte for mot in mots):
+            techniques.add(technique)
+    return sorted(techniques)

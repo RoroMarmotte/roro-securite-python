@@ -1,4 +1,4 @@
-from tp2.utils.triage import calculer_score, deviner_famille
+from tp2.utils.triage import calculer_score, deviner_famille, deviner_mitre
 
 IOCS_VIDES = {"domains": [], "ips": [], "urls": [], "mutex": [], "registry": []}
 
@@ -61,3 +61,29 @@ def test_deviner_famille_inconnue():
     test qu'un fichier sans aucun indice est classé unknown, on invente pas de famille
     """
     assert deviner_famille(IOCS_VIDES, ["printf", "malloc"], []) == "unknown"
+
+
+def test_deviner_mitre_chaque_technique():
+    """
+    test que chaque technique est déclenchée par son propre indice, et seulement par lui
+    """
+    avec_run = {**IOCS_VIDES, "registry": ["HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\svc"]}
+    avec_url = {**IOCS_VIDES, "urls": ["http://c2.goggins.test/gate.php"]}
+
+    assert deviner_mitre(avec_run, [], []) == ["T1547"]
+    assert deviner_mitre(avec_url, [], []) == ["T1071"]
+    assert deviner_mitre(IOCS_VIDES, [], ["Contenu_Packe"]) == ["T1027"]
+    assert deviner_mitre(IOCS_VIDES, ["SetWindowsHookExA"], []) == ["T1056"]
+    assert deviner_mitre(IOCS_VIDES, ["cmd.exe"], []) == ["T1059"]
+    assert deviner_mitre(IOCS_VIDES, ["URLDownloadToFileA"], []) == ["T1105"]
+
+
+def test_deviner_mitre_trie_et_liste_vide():
+    """
+    test que plusieurs techniques sortent triées sans doublon, et qu'un fichier banal
+    donne une liste vide
+    """
+    avec_url = {**IOCS_VIDES, "urls": ["http://c2.goggins.test/gate.php"]}
+
+    assert deviner_mitre(avec_url, ["URLDownloadToFileA"], ["Persistance_Cle_Run"]) == ["T1071", "T1105", "T1547"]
+    assert deviner_mitre(IOCS_VIDES, ["printf"], []) == []
