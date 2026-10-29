@@ -7,7 +7,7 @@ import "math"
 
 rule Persistance_Cle_Run {
     meta:
-        author = "David GOGGINS"
+        author = "Biglezard"
         description = "persistance via une cle Run du registre (MITRE T1547.001)"
     strings:
         $run = "\\CurrentVersion\\Run" nocase
@@ -17,7 +17,7 @@ rule Persistance_Cle_Run {
 
 rule Contenu_Packe {
     meta:
-        author = "David GOGGINS"
+        author = "Biglezard"
         description = "contenu packe ou chiffre, entropie tres haute (MITRE T1027.002)"
     condition:
         math.entropy(0, filesize) >= 6.5
