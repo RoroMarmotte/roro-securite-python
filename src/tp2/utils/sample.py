@@ -45,10 +45,13 @@ def shannon_entropy(data: bytes) -> float:
     """
     if not data:
         return 0.0
-    freq = Counter(data)
-    n = len(data)
-    entropie = -sum((c / n) * math.log2(c / n) for c in freq.values())
-    return abs(entropie)
+    compte = Counter(data)
+    taille = len(data)
+    entropie = 0.0
+    for nombre in compte.values():
+        proba = nombre / taille
+        entropie -= proba * math.log2(proba)
+    return entropie
 
 
 def get_file_metadata(data: bytes) -> dict:
@@ -146,7 +149,7 @@ def extraire_overlay(data: bytes) -> bytes:
 
 def ressemble_a_une_injection(texte: str) -> bool:
     """
-    repère un bout de texte qui parle à une IA pour l'embrouiller (genre "ignore previous
+    repère un bout de texte qui parle à un llm pour l'embrouiller (genre "ignore previous
     instructions"), du coup on le traite comme une donnée louche et jamais comme un ordre
     """
     texte = texte.lower()
@@ -156,7 +159,7 @@ def ressemble_a_une_injection(texte: str) -> bool:
 def trouver_flag(data: bytes) -> str:
     """
     on cherche le vrai flag ESGI{...} : on saute tous les bouts de texte qui essaient de
-    donner des ordres à une IA, parce que c'est là que se planque le leurre
+    donner des ordres à un llm, parce que c'est là que se planque le leurre
     """
     for morceau in extraire_strings(data):
         if ressemble_a_une_injection(morceau):
