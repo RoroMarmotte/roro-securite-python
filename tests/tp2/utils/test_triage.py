@@ -1,4 +1,4 @@
-from tp2.utils.triage import calculer_score
+from tp2.utils.triage import calculer_score, deviner_famille
 
 IOCS_VIDES = {"domains": [], "ips": [], "urls": [], "mutex": [], "registry": []}
 
@@ -38,3 +38,26 @@ def test_calculer_score_injection_fait_monter():
 
     assert sans_injection == 4
     assert avec_injection == 5
+
+
+def test_deviner_famille_reconnait_chaque_famille():
+    """
+    test un cas par famille : chaque groupe d'API typiques doit donner la bonne famille,
+    et sans API on retombe sur packé (si la règle a sonné) ou trojan (s'il contacte un serveur)
+    """
+    avec_url = {**IOCS_VIDES, "urls": ["http://c2.goggins.test/gate.php"]}
+
+    assert deviner_famille(IOCS_VIDES, ["URLDownloadToFileA", "CreateProcessA"], []) == "dropper"
+    assert deviner_famille(IOCS_VIDES, ["WSASocketA", "connect"], []) == "backdoor"
+    assert deviner_famille(IOCS_VIDES, ["SetWindowsHookExA"], []) == "keylogger"
+    assert deviner_famille(IOCS_VIDES, ["CryptEncrypt"], []) == "ransomware"
+    assert deviner_famille(IOCS_VIDES, ["CryptUnprotectData"], []) == "stealer"
+    assert deviner_famille(IOCS_VIDES, [], ["Contenu_Packe"]) == "packed"
+    assert deviner_famille(avec_url, [], []) == "trojan"
+
+
+def test_deviner_famille_inconnue():
+    """
+    test qu'un fichier sans aucun indice est classé unknown, on invente pas de famille
+    """
+    assert deviner_famille(IOCS_VIDES, ["printf", "malloc"], []) == "unknown"
