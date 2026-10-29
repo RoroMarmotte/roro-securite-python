@@ -7,6 +7,11 @@ from pathlib import Path
 import magic
 
 EXTENSIONS_FICHIERS = {"dll", "exe", "so", "php", "html", "htm", "txt", "sys", "bin", "dat"}
+DOMAINE = re.compile(r"\b(?:[a-z0-9-]+\.)+[a-z]{2,}\b", re.IGNORECASE)
+IPV4 = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
+URL = re.compile(r"https?://[^\s\"'<>]+")
+MUTEX = re.compile(r"\b(?:Global|Local)\\[\w.-]+")
+REGISTRE = re.compile(r"\b(?:HKLM|HKCU|HKCR|HKU|HKEY_[A-Z_]+)\\[^\s\"'<>]+")
 
 
 def lister_echantillons(dossier: str) -> list[Path]:
@@ -63,3 +68,29 @@ def ressemble_a_un_domaine(candidat: str) -> bool:
     if morceaux[-1].lower() in EXTENSIONS_FICHIERS:
         return False
     return any(len(morceau) >= 3 for morceau in morceaux)
+
+
+def extract_iocs(data: bytes) -> dict:
+    """
+    on fouille le texte lisible du fichier pour sortir les indices utiles : domaines, IP,
+    URLs, mutex et clés de registre, sans doublon et triés
+    """
+    texte = "\n".join(extraire_strings(data))
+
+    domaines = set()
+    for candidat in DOMAINE.findall(texte):
+        if ressemble_a_un_domaine(candidat):
+            domaines.add(candidat.lower())
+
+    ips = set()
+    for ip in IPV4.findall(texte):
+        if all(int(octet) <= 255 for octet in ip.split(".")):
+            ips.add(ip)
+
+    return {
+        "domains": sorted(domaines),
+        "ips": sorted(ips),
+        "urls": sorted(set(URL.findall(texte))),
+        "mutex": sorted(set(MUTEX.findall(texte))),
+        "registry": sorted(set(REGISTRE.findall(texte))),
+    }

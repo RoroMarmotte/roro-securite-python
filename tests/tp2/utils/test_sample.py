@@ -1,4 +1,5 @@
 from tp2.utils.sample import (
+    extract_iocs,
     extraire_strings,
     get_file_metadata,
     lister_echantillons,
@@ -64,3 +65,27 @@ def test_ressemble_a_un_domaine_trie_les_faux():
     assert ressemble_a_un_domaine("goat.dll") is False
     assert ressemble_a_un_domaine("CMD.EXE") is False
     assert ressemble_a_un_domaine("7.uu") is False
+
+
+def test_extract_iocs_trouve_les_bons_indices():
+    """
+    test sur un faux binaire qui mélange de vrais indices avec des pièges (nom de dll,
+    IP impossible, domaine en majuscules) pour voir si on garde que les bons
+    """
+    data = (
+        b"\x00urlmon.dll\x00C2.Evil.Test\x00"
+        b"http://c2.evil.test/gate.php\x00"
+        b"10.0.0.5\x00999.1.1.1\x00"
+        b"Global\\mutex42\x00"
+        b"HKCU\\Software\\Run\\svc\x00"
+    )
+
+    resultat = extract_iocs(data)
+
+    assert resultat == {
+        "domains": ["c2.evil.test"],
+        "ips": ["10.0.0.5"],
+        "urls": ["http://c2.evil.test/gate.php"],
+        "mutex": ["Global\\mutex42"],
+        "registry": ["HKCU\\Software\\Run\\svc"],
+    }
