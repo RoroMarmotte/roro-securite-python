@@ -1,4 +1,4 @@
-from tp2.utils.scanner import charger_regles
+from tp2.utils.scanner import charger_regles, yara_scan
 
 
 def test_charger_regles_prend_le_dossier_et_les_regles_perso(tmp_path):
@@ -23,3 +23,23 @@ def test_charger_regles_sans_dossier_garde_les_perso(tmp_path):
     noms = {match.rule for match in regles.match(data=b"\\CurrentVersion\\Run")}
 
     assert noms == {"Persistance_Cle_Run"}
+
+
+def test_yara_scan_renvoie_les_noms_tries(tmp_path):
+    """
+    test avec des octets bien mélangés (entropie max) plus une clé Run : nos 2 règles
+    doivent sonner, et les noms doivent sortir triés
+    """
+    regles = charger_regles(str(tmp_path))
+    data = bytes(range(256)) * 4 + b"\\CurrentVersion\\Run"
+
+    assert yara_scan(data, regles) == ["Contenu_Packe", "Persistance_Cle_Run"]
+
+
+def test_yara_scan_fichier_sain(tmp_path):
+    """
+    test qu'un fichier banal ne déclenche aucune règle, sinon nos règles seraient trop larges
+    """
+    regles = charger_regles(str(tmp_path))
+
+    assert yara_scan(b"juste un fichier banal", regles) == []

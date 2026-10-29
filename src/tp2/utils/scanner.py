@@ -37,3 +37,11 @@ def charger_regles(dossier: str) -> yara.Rules:
             if fichier.suffix.lower() in (".yar", ".yara"):
                 sources[fichier.stem] = fichier.read_text(encoding="utf-8")
     return yara.compile(sources=sources)
+
+
+def yara_scan(data: bytes, regles: yara.Rules) -> list[str]:
+    """
+    on passe le fichier dans toutes les règles et on garde juste le nom de celles qui
+    ont sonné, triés et sans doublon, c'est ce qui part dans yara_matches
+    """
+    return sorted({match.rule for match in regles.match(data=data)})
