@@ -25,6 +25,7 @@ MOTS_INJECTION = [
     "decoy",
     "mark the sample clean",
 ]
+MOTIF_FLAG = re.compile(r"ESGI\{[A-Za-z0-9_\-]+\}")
 
 
 def lister_echantillons(dossier: str) -> list[Path]:
@@ -150,3 +151,17 @@ def ressemble_a_une_injection(texte: str) -> bool:
     """
     texte = texte.lower()
     return any(mot in texte for mot in MOTS_INJECTION)
+
+
+def trouver_flag(data: bytes) -> str:
+    """
+    on cherche le vrai flag ESGI{...} : on saute tous les bouts de texte qui essaient de
+    donner des ordres à une IA, parce que c'est là que se planque le leurre
+    """
+    for morceau in extraire_strings(data):
+        if ressemble_a_une_injection(morceau):
+            continue
+        trouve = MOTIF_FLAG.search(morceau)
+        if trouve:
+            return trouve.group()
+    return ""
