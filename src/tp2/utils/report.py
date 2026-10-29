@@ -7,7 +7,7 @@ from fpdf import FPDF
 def write_json(resultat: dict, dossier: str, nom: str) -> Path:
     """
     on écrit le rapport d'un échantillon dans le dossier --out, sous le nom <échantillon>.triage.json
-    comme le veut la correction (nom = nom du fichier sans son extension), et on crée le dossier
+    comme le veut la correction (nom = nom complet du fichier, ex. sample1.bin), et on crée le dossier
     s'il existe pas encore
     """
     sortie = Path(dossier)

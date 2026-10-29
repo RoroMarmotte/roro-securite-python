@@ -33,7 +33,7 @@ def main() -> None:
         except Exception as erreur:
             logger.error(f"Échec de l'analyse de {chemin.name} : {erreur}")
             continue
-        write_json(resultat, args.out, chemin.stem)
+        write_json(resultat, args.out, chemin.name)
         resultats.append(resultat)
 
     if resultats:

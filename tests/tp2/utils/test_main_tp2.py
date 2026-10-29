@@ -35,7 +35,7 @@ def test_main_json_par_echantillon(tmp_path, monkeypatch):
 
     main()
 
-    fichier = sortie / "a.triage.json"
+    fichier = sortie / "a.bin.triage.json"
     assert fichier.is_file()
     with open(fichier, encoding="utf-8") as f:
         rapport = json.load(f)
