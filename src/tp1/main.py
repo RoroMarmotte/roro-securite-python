@@ -2,7 +2,7 @@ import argparse
 from tp1.utils.capture import capture, sort_network_protocols
 from tp1.utils.config import logger
 from tp1.utils.report import build_report, save_pdf, write_json
-from tp1.utils.detection import analyse, trouver_flag
+from tp1.utils.detection import analyse
 
 
 def main():
@@ -19,8 +19,7 @@ def main():
     packet = capture(interface=args.interface, pcap=args.pcap)
     protocols = sort_network_protocols(packets=packet)
     attacks = analyse(packet)
-    flag = trouver_flag(packet, attacks)
-    report = build_report(protocols, attacks, flag)
+    report = build_report(protocols, attacks, "")
     write_json(report, args.out)
     save_pdf(report, args.pdf)
 
