@@ -3,17 +3,17 @@ import json
 from tp2.utils.report import generate_report, write_json
 
 
-def test_write_json_ecrit_sha256_point_json(tmp_path):
+def test_write_json_nom_fichier(tmp_path):
     """
-    test que le fichier porte bien le nom <sha256>.json, que le dossier est créé tout seul,
+    test que le fichier porte bien le nom échantillon.triage.json, que le dossier est créé tout seul,
     et qu'en le relisant on retrouve exactement le même rapport, accents compris
     """
     resultat = {"sha256": "ab" * 32, "flag": "ESGI{goggins_test}", "llm_summary": "résumé avec accents"}
     dossier = tmp_path / "out" / "triage"
 
-    chemin = write_json(resultat, str(dossier))
+    chemin = write_json(resultat, str(dossier), "sample1")
 
-    assert chemin == dossier / f"{'ab' * 32}.json"
+    assert chemin == dossier / "sample1.triage.json"
     assert chemin.is_file()
     with open(chemin, encoding="utf-8") as fichier:
         assert json.load(fichier) == resultat
@@ -35,7 +35,9 @@ def test_generate_report_cree_un_pdf(tmp_path):
     n'a ni règle yara ni technique MITRE (on doit afficher un tiret, pas planter)
     """
     chemin = tmp_path / "triage.pdf"
-    sans_rien = {**EXEMPLE, "yara_matches": [], "mitre_attack": []}
+    sans_rien = EXEMPLE.copy()
+    sans_rien["yara_matches"] = []
+    sans_rien["mitre_attack"] = []
 
     generate_report([EXEMPLE, sans_rien], str(chemin))
 
