@@ -4,7 +4,10 @@ import re
 from collections import Counter
 from pathlib import Path
 
+import lief
 import magic
+
+lief.logging.disable()
 
 EXTENSIONS_FICHIERS = {"dll", "exe", "so", "php", "html", "htm", "txt", "sys", "bin", "dat"}
 DOMAINE = re.compile(r"\b(?:[a-z0-9-]+\.)+[a-z]{2,}\b", re.IGNORECASE)
@@ -94,3 +97,22 @@ def extract_iocs(data: bytes) -> dict:
         "mutex": sorted(set(MUTEX.findall(texte))),
         "registry": sorted(set(REGISTRE.findall(texte))),
     }
+
+
+def parse_binary(path: str) -> dict:
+    """
+    on ouvre le binaire avec lief pour voir ce qu'il importe, ce qu'il exporte et ses sections,
+    et si c'est pas un exécutable (genre un .txt) on renvoie juste des listes vides
+    """
+    binaire = lief.parse(path)
+    if binaire is None:
+        return {"imports": [], "exports": [], "sections": []}
+
+    imports = {fonction.name for fonction in binaire.imported_functions if fonction.name}
+    exports = {fonction.name for fonction in binaire.exported_functions if fonction.name}
+    sections = []
+    for section in binaire.sections:
+        if section.name:
+            sections.append({"name": section.name, "entropy": round(section.entropy, 2)})
+
+    return {"imports": sorted(imports), "exports": sorted(exports), "sections": sections}
