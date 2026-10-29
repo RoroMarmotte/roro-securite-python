@@ -116,3 +116,18 @@ def parse_binary(path: str) -> dict:
             sections.append({"name": section.name, "entropy": round(section.entropy, 2)})
 
     return {"imports": sorted(imports), "exports": sorted(exports), "sections": sections}
+
+
+def extraire_overlay(data: bytes) -> bytes:
+    """
+    l'overlay c'est ce qui est collé après la fin officielle du programme, une cachette
+    classique pour les malwares ; si y en a pas, on garde tout le fichier
+    """
+    binaire = lief.parse(data)
+    if binaire is None:
+        return data
+
+    overlay = bytes(binaire.overlay)
+    if not overlay:
+        return data
+    return overlay

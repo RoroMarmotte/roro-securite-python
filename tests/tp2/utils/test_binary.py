@@ -1,6 +1,7 @@
 import sys
+from pathlib import Path
 
-from tp2.utils.sample import parse_binary
+from tp2.utils.sample import extraire_overlay, parse_binary
 
 
 def test_parse_binary_lit_un_vrai_executable():
@@ -25,3 +26,25 @@ def test_parse_binary_ignore_un_fichier_texte(tmp_path):
     resultat = parse_binary(str(fichier))
 
     assert resultat == {"imports": [], "exports": [], "sections": []}
+
+
+def test_extraire_overlay_recupere_la_zone_cachee():
+    """
+    test en collant un message à la fin de l'exécutable python : on doit le retrouver
+    dans l'overlay, et l'overlay doit être plus petit que le fichier entier
+    """
+    data = Path(sys.executable).read_bytes() + b"ZONE_CACHEE_GOGGINS"
+
+    resultat = extraire_overlay(data)
+
+    assert resultat.endswith(b"ZONE_CACHEE_GOGGINS")
+    assert len(resultat) < len(data)
+
+
+def test_extraire_overlay_garde_tout_si_pas_un_binaire():
+    """
+    test que pour du texte (pas un exécutable), on récupère le contenu en entier
+    """
+    data = b"juste une note, pas un programme"
+
+    assert extraire_overlay(data) == data
