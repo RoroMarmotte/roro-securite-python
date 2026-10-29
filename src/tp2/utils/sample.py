@@ -15,6 +15,16 @@ IPV4 = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
 URL = re.compile(r"https?://[^\s\"'<>]+")
 MUTEX = re.compile(r"\b(?:Global|Local)\\[\w.-]+")
 REGISTRE = re.compile(r"\b(?:HKLM|HKCU|HKCR|HKU|HKEY_[A-Z_]+)\\[^\s\"'<>]+")
+MOTS_INJECTION = [
+    "ignore previous",
+    "ignore all previous",
+    "disregard",
+    "instructions",
+    "note_to_ai",
+    "honeypot",
+    "decoy",
+    "mark the sample clean",
+]
 
 
 def lister_echantillons(dossier: str) -> list[Path]:
@@ -131,3 +141,12 @@ def extraire_overlay(data: bytes) -> bytes:
     if not overlay:
         return data
     return overlay
+
+
+def ressemble_a_une_injection(texte: str) -> bool:
+    """
+    repère un bout de texte qui parle à une IA pour l'embrouiller (genre "ignore previous
+    instructions"), du coup on le traite comme une donnée louche et jamais comme un ordre
+    """
+    texte = texte.lower()
+    return any(mot in texte for mot in MOTS_INJECTION)
