@@ -6,6 +6,8 @@ from pathlib import Path
 
 import magic
 
+EXTENSIONS_FICHIERS = {"dll", "exe", "so", "php", "html", "htm", "txt", "sys", "bin", "dat"}
+
 
 def lister_echantillons(dossier: str) -> list[Path]:
     """
@@ -50,3 +52,14 @@ def extraire_strings(data: bytes) -> list[str]:
     """
     morceaux = re.findall(rb"[\x20-\x7e]{4,}", data)
     return [morceau.decode("ascii") for morceau in morceaux]
+
+
+def ressemble_a_un_domaine(candidat: str) -> bool:
+    """
+    trie les faux domaines : un nom de fichier genre urlmon.dll n'en est pas un, et un vrai
+    domaine a au moins un morceau de 3 lettres, contrairement aux bouts de hasard comme 7.uu
+    """
+    morceaux = candidat.split(".")
+    if morceaux[-1].lower() in EXTENSIONS_FICHIERS:
+        return False
+    return any(len(morceau) >= 3 for morceau in morceaux)

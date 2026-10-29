@@ -1,4 +1,10 @@
-from tp2.utils.sample import extraire_strings, get_file_metadata, lister_echantillons, shannon_entropy
+from tp2.utils.sample import (
+    extraire_strings,
+    get_file_metadata,
+    lister_echantillons,
+    ressemble_a_un_domaine,
+    shannon_entropy,
+)
 
 
 def test_lister_echantillons_trie_et_ignore_les_dossiers(tmp_path):
@@ -48,3 +54,13 @@ def test_extraire_strings_garde_le_texte_lisible():
     resultat = extraire_strings(data)
 
     assert resultat == ["HELLO", "world!!"]
+
+
+def test_ressemble_a_un_domaine_trie_les_faux():
+    """
+    test qu'un vrai domaine passe, mais pas un nom de fichier ni un bout de hasard
+    """
+    assert ressemble_a_un_domaine("c2.evil.test") is True
+    assert ressemble_a_un_domaine("goat.dll") is False
+    assert ressemble_a_un_domaine("CMD.EXE") is False
+    assert ressemble_a_un_domaine("7.uu") is False
