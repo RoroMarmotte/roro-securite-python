@@ -61,7 +61,7 @@ def test_ressemble_a_un_domaine_trie_les_faux():
     """
     test qu'un vrai domaine passe, mais pas un nom de fichier ni un bout de hasard
     """
-    assert ressemble_a_un_domaine("c2.evil.test") is True
+    assert ressemble_a_un_domaine("c2.goggins.test") is True
     assert ressemble_a_un_domaine("goat.dll") is False
     assert ressemble_a_un_domaine("CMD.EXE") is False
     assert ressemble_a_un_domaine("7.uu") is False
