@@ -1,5 +1,6 @@
 import hashlib
 import math
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -40,3 +41,12 @@ def get_file_metadata(data: bytes) -> dict:
         "file_type": magic.from_buffer(data),
         "entropy": round(shannon_entropy(data), 2),
     }
+
+
+def extraire_strings(data: bytes) -> list[str]:
+    """
+    comme la commande strings sous Linux : on récupère tous les bouts de texte lisible
+    du binaire, d'au moins 4 caractères d'affilée
+    """
+    morceaux = re.findall(rb"[\x20-\x7e]{4,}", data)
+    return [morceau.decode("ascii") for morceau in morceaux]

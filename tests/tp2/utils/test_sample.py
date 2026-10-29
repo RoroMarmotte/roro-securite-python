@@ -1,4 +1,4 @@
-from tp2.utils.sample import get_file_metadata, lister_echantillons, shannon_entropy
+from tp2.utils.sample import extraire_strings, get_file_metadata, lister_echantillons, shannon_entropy
 
 
 def test_lister_echantillons_trie_et_ignore_les_dossiers(tmp_path):
@@ -36,3 +36,15 @@ def test_get_file_metadata_sur_abc():
     assert resultat["size"] == 3
     assert resultat["entropy"] == 1.58
     assert "text" in resultat["file_type"].lower()
+
+
+def test_extraire_strings_garde_le_texte_lisible():
+    """
+    test qu'on garde les mots d'au moins 4 caractères et qu'on jette les octets illisibles
+    et les mots trop courts
+    """
+    data = b"\x00\x01abc\x00HELLO\xffworld!!\x00"
+
+    resultat = extraire_strings(data)
+
+    assert resultat == ["HELLO", "world!!"]
