@@ -1,6 +1,9 @@
 from pathlib import Path
 
+import requests
+
 CHEMIN_WORDLIST = Path(__file__).parent.parent / "wordlist.txt"
+DELAI = 5
 
 
 def charger_wordlist(chemin: Path = CHEMIN_WORDLIST) -> list[str]:
@@ -14,3 +17,16 @@ def charger_wordlist(chemin: Path = CHEMIN_WORDLIST) -> list[str]:
         if mot:
             mots.append(mot)
     return mots
+
+
+def trouver_endpoint(target: str, mots: list[str]) -> str | None:
+    """
+    on teste chaque mot de la wordlist sur la cible : le premier chemin qui répond
+    autre chose qu'un 404 est la page cachée ; sinon on renvoie None
+    """
+    for mot in mots:
+        url = f"{target.rstrip('/')}/{mot}"
+        reponse = requests.get(url, timeout=DELAI)
+        if reponse.status_code != 404:
+            return mot
+    return None
