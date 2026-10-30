@@ -1,49 +1,23 @@
-from src.tp3.utils.captcha import Captcha
+import io
+
+from PIL import Image, ImageDraw, ImageFont
+
+from tp3.utils.captcha import resoudre_captcha
 
 
-def test_captcha_init():
-    # Given
-    url = "http://example.com/captcha"
-
-    # When
-    captcha = Captcha(url)
-
-    # Then
-    assert captcha.url == url
-    assert captcha.image == ""
-    assert captcha.value == ""
+def _image(code: str) -> bytes:
+    """petite aide : fabrique une image de captcha (texte noir sur fond blanc) comme le serveur"""
+    image = Image.new("RGB", (220, 90), "white")
+    ImageDraw.Draw(image).text((20, 25), code, fill="black", font=ImageFont.load_default(size=48))
+    tampon = io.BytesIO()
+    image.save(tampon, "PNG")
+    return tampon.getvalue()
 
 
-def test_solve():
-    # Given
-    captcha = Captcha("http://example.com/captcha")
-
-    # When
-    captcha.solve()
-
-    # Then
-    assert captcha.value == "FIXME"
-
-
-def test_capture():
-    # Given
-    captcha = Captcha("http://example.com/captcha")
-
-    # When
-    captcha.capture()
-
-    # Then
-    # This is a minimal test since the method doesn't do anything yet
-    assert captcha.image == ""
-
-
-def test_get_value():
-    # Given
-    captcha = Captcha("http://example.com/captcha")
-    captcha.value = "TEST123"
-
-    # When
-    result = captcha.get_value()
-
-    # Then
-    assert result == "TEST123"
+def test_resoudre_captcha_lit_le_code():
+    """
+    test qu'on relit correctement deux codes différents : l'OCR marche vraiment,
+    il ne renvoie pas une valeur en dur
+    """
+    assert resoudre_captcha(_image("ABC42")) == "ABC42"
+    assert resoudre_captcha(_image("7XK9Q")) == "7XK9Q"
